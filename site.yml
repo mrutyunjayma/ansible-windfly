@@ -1,0 +1,7 @@
+---
+- name: Deploy wildfly java appliction
+  hosts: all
+  become: true
+
+  roles:
+    - wildfly

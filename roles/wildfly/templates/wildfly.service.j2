@@ -1,0 +1,12 @@
+[Unit]
+Description=WildFly Application Server
+After=network.target
+
+[Service]
+Type=simple
+User=wildfly
+ExecStart=/opt/wildfly/bin/standalone.sh -b=0.0.0.0 -c=standalone.xml
+Restart=on-failure
+
+[Install]
+WantedBy=multi-user.target

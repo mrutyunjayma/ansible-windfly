@@ -1,0 +1,50 @@
+<server xmlns="urn:jboss:domain:4.0">
+    <extensions>
+        <extension module="org.jboss.as.clustering.infinispan"/>
+        <extension module="org.jboss.as.connector"/>
+        <extension module="org.jboss.as.deployment-scanner"/>
+        <extension module="org.jboss.as.ee"/>
+        <extension module="org.jboss.as.ejb3"/>
+        <extension module="org.jboss.as.jaxrs"/>
+        <extension module="org.jboss.as.jdr"/>
+        <extension module="org.jboss.as.logging"/>
+        <extension module="org.jboss.as.naming"/>
+        <extension module="org.jboss.as.remoting"/>
+        <extension module="org.jboss.as.security"/>
+        <extension module="org.jboss.as.transactions"/>
+        <extension module="org.jboss.as.web"/>
+        <extension module="org.jboss.as.webservices"/>
+    </extensions>
+
+    <management>
+        <security-realms>
+            <security-realm name="ManagementRealm">
+                <authentication>
+                    <local default-user="$local" allowed-users="*"/>
+                </authentication>
+            </security-realm>
+        </security-realms>
+        <management-interfaces>
+            <native-interface interface="management"/>
+            <http-interface interface="management" port="9990"/>
+        </management-interfaces>
+    </management>
+
+    <profile>
+        <subsystem xmlns="urn:jboss:domain:deployment-scanner:1.1">
+            <deployment-scanner path="deployments" relative-to="jboss.server.base.dir" scan-interval="5000"/>
+        </subsystem>
+        <subsystem xmlns="urn:jboss:domain:web:2.2" default-virtual-server="default-host">
+            <connector name="http" protocol="HTTP/1.1" socket-binding="http"/>
+            <virtual-server name="default-host" enable-welcome-root="true">
+                <alias name="localhost"/>
+                <alias name="example.com"/>
+            </virtual-server>
+        </subsystem>
+    </profile>
+
+    <socket-binding-group name="standard-sockets" default-interface="public">
+        <socket-binding name="http" port="8080"/>
+        <socket-binding name="management-http" port="9990"/>
+    </socket-binding-group>
+</server>

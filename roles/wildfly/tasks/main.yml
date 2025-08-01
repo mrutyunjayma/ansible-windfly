@@ -1,0 +1,88 @@
+---
+# Install required packages
+- name: Install OpenJDK, wget, unzip
+  apt:
+    name:
+      - openjdk-11-jdk
+      - wget
+      - unzip
+    state: present
+    update_cache: yes
+
+# Create system user for WildFly
+- name: Create 'wildfly' user
+  user:
+    name: wildfly
+    shell: /bin/false
+    create_home: no
+
+# Download WildFly zip
+- name: Download WildFly 30.0.0.Final
+  get_url:
+    url: https://github.com/wildfly/wildfly/releases/download/30.0.0.Final/wildfly-30.0.0.Final.zip
+    dest: /tmp/wildfly.zip
+    mode: "0644"
+
+# Extract WildFly
+- name: Extract WildFly archive
+  unarchive:
+    src: /tmp/wildfly.zip
+    dest: /opt/
+    remote_src: yes
+
+# Rename extracted folder
+- name: Rename extracted WildFly folder
+  command: mv /opt/wildfly-30.0.0.Final /opt/wildfly
+  args:
+    creates: /opt/wildfly
+
+# Set ownership of /opt/wildfly
+- name: Set ownership of /opt/wildfly
+  file:
+    path: /opt/wildfly
+    owner: wildfly
+    group: wildfly
+    recurse: yes
+
+# (Optional) Deploy your Java WAR app
+- name: Deploy application WAR file
+  copy:
+    src: your-java-app.war
+    dest: /opt/wildfly/standalone/deployments/
+    owner: wildfly
+    group: wildfly
+    mode: "0644"
+  notify: restart wildfly
+  ignore_errors: yes # in case you don't have a WAR file
+
+# Copy systemd unit file
+- name: Copy WildFly systemd unit file
+  copy:
+    dest: /etc/systemd/system/wildfly.service
+    content: |
+      [Unit]
+      Description=The WildFly Application Server
+      After=network.target
+
+      [Service]
+      Type=simple
+      User=wildfly
+      Group=wildfly
+      ExecStart=/opt/wildfly/bin/standalone.sh -b=0.0.0.0
+      Restart=always
+
+      [Install]
+      WantedBy=multi-user.target
+  notify: restart wildfly
+
+# Reload systemd
+- name: Reload systemd to register WildFly service
+  systemd:
+    daemon_reload: yes
+
+# Enable and start WildFly service
+- name: Enable and start WildFly service
+  systemd:
+    name: wildfly
+    enabled: yes
+    state: started

@@ -1,0 +1,8 @@
+---
+# This handler will restart WildFly after installation or configuration change
+- name: restart wildfly
+  systemd:
+    name: wildfly
+    state: restarted
+    enabled: yes
+    daemon_reload: yes
