@@ -8,21 +8,37 @@ This project automates the deployment of a **Java application on WildFly (former
 ## 📁 Project Structure
 
 wildfly-ansible-project/
+
 ├── group_vars/
+
 │ └── all # Global variables (AWS credentials, EC2 config, etc.)
+
 ├── roles/
+
 │ ├── wildfly/
+
 │ │ ├── tasks/
+
 │ │ │ └── main.yml # Installation & configuration tasks
+
 │ │ ├── templates/
+
 │ │ │ ├── standalone.xml.j2 # WildFly configuration template
+
 │ │ │ └── iptables-save.j2 # Firewall rules
+
 │ │ ├── files/
+
 │ │ │ └── wildfly-app.war # Java WAR file to be deployed
+
 │ │ └── handlers/
+
 │ │ └── main.yml # Service restart triggers
+
 ├── hosts # Ansible inventory (localhost or dynamic EC2)
+
 ├── site.yml # Master playbook
+
 └── README.md
 
 yaml
